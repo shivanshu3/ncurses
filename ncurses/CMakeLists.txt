@@ -96,11 +96,19 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/make_keys
 )
 
+set(PARAMETRIZED_H ${CMAKE_CURRENT_BINARY_DIR}/parametrized.h)
+add_custom_command(
+    OUTPUT ${PARAMETRIZED_H}
+    COMMAND sh ./MKparametrized.sh ./Caps ./Caps-ncurses > ${PARAMETRIZED_H}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
+)
+
 add_custom_target(
     GEN_HEADERS DEPENDS
     ${NCURSES_DEF_H}
     ${HASHSIZE_H}
     ${INIT_KEYTRY_H}
+    ${PARAMETRIZED_H}
 )
 
 add_library(ncurses STATIC
