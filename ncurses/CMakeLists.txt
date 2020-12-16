@@ -57,6 +57,13 @@ add_custom_target(
     ${NAMES_C}
 )
 
+set(UNCTRL_C ${CMAKE_CURRENT_BINARY_DIR}/unctrl.c)
+add_custom_command(
+    OUTPUT ${UNCTRL_C}
+    COMMAND echo | awk -f ./base/MKunctrl.awk bigstrings=1 > ${UNCTRL_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 ### Misc tools
 
 add_executable(make_keys
@@ -124,6 +131,7 @@ add_library(ncurses STATIC
     # ${EXPANDED_C}
     ${FALLBACK_C}
     ${NAMES_C}
+    ${UNCTRL_C}
     base/define_key.c
     base/key_defined.c
     base/keybound.c
@@ -266,7 +274,6 @@ add_library(ncurses STATIC
     tty/lib_twait.c
     tty/lib_vidattr.c
     tty/tty_update.c
-    # unctrl.c
 )
 
 add_dependencies(ncurses GEN_HEADERS)
