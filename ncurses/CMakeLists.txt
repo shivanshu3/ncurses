@@ -43,10 +43,33 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(NAMES_C ${CMAKE_CURRENT_BINARY_DIR}/names.c)
+add_custom_command(
+    OUTPUT ${NAMES_C}
+    COMMAND awk -f ./tinfo/MKnames.awk bigstrings=1 ../include/Caps ../include/Caps-ncurses > ${NAMES_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    NAMES_C_TARGET DEPENDS
+    ${NAMES_C}
+)
+
 ### Misc tools
 
 add_executable(make_keys
     ./tinfo/make_keys.c
+)
+
+add_dependencies(make_keys NAMES_C_TARGET)
+
+### Misc generated files
+
+set(KEYS_LIST ${CMAKE_CURRENT_BINARY_DIR}/keys.list)
+add_custom_command(
+    OUTPUT ${KEYS_LIST}
+    COMMAND sh ./tinfo/MKkeys_list.sh ../include/Caps ../include/Caps-ncurses | LC_ALL=C sort > ${KEYS_LIST}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 ### Generated H files
@@ -65,10 +88,19 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
 )
 
+set(INIT_KEYTRY_H ${CMAKE_CURRENT_BINARY_DIR}/init_keytry.h)
+add_custom_command(
+    OUTPUT ${INIT_KEYTRY_H}
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/make_keys ${KEYS_LIST} > ${INIT_KEYTRY_H}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/make_keys
+)
+
 add_custom_target(
     GEN_HEADERS DEPENDS
     ${NCURSES_DEF_H}
     ${HASHSIZE_H}
+    ${INIT_KEYTRY_H}
 )
 
 add_library(ncurses STATIC
