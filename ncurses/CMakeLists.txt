@@ -2,8 +2,11 @@ add_compile_definitions(_DEFAULT_SOURCE)
 add_compile_definitions(_XOPEN_SOURCE=600)
 add_compile_definitions(NDEBUG)
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+### Generated C source files
 
 set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
 add_custom_command(
@@ -26,10 +29,40 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
+add_custom_command(
+    OUTPUT ${EXPANDED_C}
+    COMMAND sh -e ./tty/MKexpanded.sh > ${EXPANDED_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(FALLBACK_C ${CMAKE_CURRENT_BINARY_DIR}/fallback.c)
+add_custom_command(
+    OUTPUT ${FALLBACK_C}
+    COMMAND sh -e ./tinfo/MKfallback.sh /usr/share/terminfo ../misc/terminfo.src tic infocmp > ${FALLBACK_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+### Generated H files
+
+set(NCURSES_DEF_H ${CMAKE_CURRENT_BINARY_DIR}/ncurses_def.h)
+add_custom_command(
+    OUTPUT ${NCURSES_DEF_H}
+    COMMAND sh ./MKncurses_def.sh ./ncurses_defs > ${NCURSES_DEF_H}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
+)
+
+add_custom_target(
+    GEN_HEADERS
+    DEPENDS ${NCURSES_DEF_H}
+)
+
 add_library(ncurses STATIC
-    ${CODES_C}
-    ${COMP_CAPTAB_C}
-    ${COMP_USERDEFS_C}
+    # ${CODES_C}
+    # ${COMP_CAPTAB_C}
+    # ${COMP_USERDEFS_C}
+    # ${EXPANDED_C}
+    # ${FALLBACK_C}
     base/define_key.c
     base/key_defined.c
     base/keybound.c
@@ -114,11 +147,9 @@ add_library(ncurses STATIC
     base/version.c
     base/vsscanf.c
     base/wresize.c
-    expanded.c
-    fallback.c
-    lib_gen.c
-    lib_keyname.c
-    names.c
+    # lib_gen.c
+    # lib_keyname.c
+    # names.c
     tinfo/access.c
     tinfo/add_tries.c
     tinfo/alloc_entry.c
@@ -175,6 +206,8 @@ add_library(ncurses STATIC
     tty/lib_twait.c
     tty/lib_vidattr.c
     tty/tty_update.c
-    unctrl.c
+    # unctrl.c
 )
+
+add_dependencies(ncurses GEN_HEADERS)
 
