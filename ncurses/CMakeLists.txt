@@ -18,8 +18,9 @@ add_custom_command(
 set(COMP_CAPTAB_C ${CMAKE_CURRENT_BINARY_DIR}/comp_captab.c)
 add_custom_command(
     OUTPUT ${COMP_CAPTAB_C}
-    COMMAND sh -e ./tinfo/MKcaptab.sh awk 1 ./tinfo/MKcaptab.awk ../include/Caps ../include/Caps-ncurses > ${COMP_CAPTAB_C}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND sh -e ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKcaptab.sh awk 1 ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKcaptab.awk ${CMAKE_SOURCE_DIR}/include/Caps ${CMAKE_SOURCE_DIR}/include/Caps-ncurses > ${COMP_CAPTAB_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/make_hash
 )
 
 set(COMP_USERDEFS_C ${CMAKE_CURRENT_BINARY_DIR}/comp_userdefs.c)
@@ -59,6 +60,10 @@ add_custom_target(
 
 add_executable(make_keys
     ./tinfo/make_keys.c
+)
+
+add_executable(make_hash
+    ./tinfo/make_hash.c
 )
 
 add_dependencies(make_keys NAMES_C_TARGET)
@@ -113,10 +118,11 @@ add_custom_target(
 
 add_library(ncurses STATIC
     # ${CODES_C}
-    # ${COMP_CAPTAB_C}
+    ${COMP_CAPTAB_C}
     # ${COMP_USERDEFS_C}
     # ${EXPANDED_C}
-    # ${FALLBACK_C}
+    ${FALLBACK_C}
+    ${NAMES_C}
     base/define_key.c
     base/key_defined.c
     base/keybound.c
@@ -203,7 +209,6 @@ add_library(ncurses STATIC
     base/wresize.c
     # lib_gen.c
     # lib_keyname.c
-    # names.c
     tinfo/access.c
     tinfo/add_tries.c
     tinfo/alloc_entry.c
