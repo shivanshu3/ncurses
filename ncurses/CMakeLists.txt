@@ -26,8 +26,9 @@ add_custom_command(
 set(COMP_USERDEFS_C ${CMAKE_CURRENT_BINARY_DIR}/comp_userdefs.c)
 add_custom_command(
     OUTPUT ${COMP_USERDEFS_C}
-    COMMAND sh -e ./tinfo/MKuserdefs.sh awk 1 ../include/Caps ../include/Caps-ncurses > ${COMP_USERDEFS_C}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND sh -e ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKuserdefs.sh awk 1 ${CMAKE_SOURCE_DIR}/include/Caps ${CMAKE_SOURCE_DIR}/include/Caps-ncurses > ${COMP_USERDEFS_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/make_hash
 )
 
 set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
@@ -119,7 +120,7 @@ add_custom_target(
 add_library(ncurses STATIC
     # ${CODES_C}
     ${COMP_CAPTAB_C}
-    # ${COMP_USERDEFS_C}
+    ${COMP_USERDEFS_C}
     # ${EXPANDED_C}
     ${FALLBACK_C}
     ${NAMES_C}
