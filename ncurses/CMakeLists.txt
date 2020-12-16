@@ -5,7 +5,31 @@ add_compile_definitions(NDEBUG)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
+add_custom_command(
+    OUTPUT ${CODES_C}
+    COMMAND awk -f ./tinfo/MKcodes.awk bigstrings=1 ../include/Caps ../include/Caps-ncurses > ${CODES_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(COMP_CAPTAB_C ${CMAKE_CURRENT_BINARY_DIR}/comp_captab.c)
+add_custom_command(
+    OUTPUT ${COMP_CAPTAB_C}
+    COMMAND sh -e ./tinfo/MKcaptab.sh awk 1 ./tinfo/MKcaptab.awk ../include/Caps ../include/Caps-ncurses > ${COMP_CAPTAB_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(COMP_USERDEFS_C ${CMAKE_CURRENT_BINARY_DIR}/comp_userdefs.c)
+add_custom_command(
+    OUTPUT ${COMP_USERDEFS_C}
+    COMMAND sh -e ./tinfo/MKuserdefs.sh awk 1 ../include/Caps ../include/Caps-ncurses > ${COMP_USERDEFS_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 add_library(ncurses STATIC
+    ${CODES_C}
+    ${COMP_CAPTAB_C}
+    ${COMP_USERDEFS_C}
     base/define_key.c
     base/key_defined.c
     base/keybound.c
@@ -90,9 +114,6 @@ add_library(ncurses STATIC
     base/version.c
     base/vsscanf.c
     base/wresize.c
-    codes.c
-    comp_captab.c
-    comp_userdefs.c
     expanded.c
     fallback.c
     lib_gen.c
