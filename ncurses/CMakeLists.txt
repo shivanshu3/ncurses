@@ -43,6 +43,12 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+### Misc tools
+
+add_executable(make_keys
+    ./tinfo/make_keys.c
+)
+
 ### Generated H files
 
 set(NCURSES_DEF_H ${CMAKE_CURRENT_BINARY_DIR}/ncurses_def.h)
@@ -52,9 +58,17 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
 )
 
+set(HASHSIZE_H ${CMAKE_CURRENT_BINARY_DIR}/hashsize.h)
+add_custom_command(
+    OUTPUT ${HASHSIZE_H}
+    COMMAND sh ./MKhashsize.sh ./Caps ./Caps-ncurses > ${HASHSIZE_H}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
+)
+
 add_custom_target(
-    GEN_HEADERS
-    DEPENDS ${NCURSES_DEF_H}
+    GEN_HEADERS DEPENDS
+    ${NCURSES_DEF_H}
+    ${HASHSIZE_H}
 )
 
 add_library(ncurses STATIC
