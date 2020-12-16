@@ -74,7 +74,16 @@ add_executable(make_hash
     ./tinfo/make_hash.c
 )
 
-add_dependencies(make_keys NAMES_C_TARGET)
+add_dependencies(make_keys
+    NAMES_C_TARGET
+    NCURSES_DEF_H_TARGET
+    HASHSIZE_H_TARGET
+)
+
+add_dependencies(make_hash
+    NCURSES_DEF_H_TARGET
+    HASHSIZE_H_TARGET
+)
 
 ### Misc generated files
 
@@ -94,12 +103,16 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
 )
 
+add_custom_target(NCURSES_DEF_H_TARGET DEPENDS ${NCURSES_DEF_H})
+
 set(HASHSIZE_H ${CMAKE_CURRENT_BINARY_DIR}/hashsize.h)
 add_custom_command(
     OUTPUT ${HASHSIZE_H}
     COMMAND sh ./MKhashsize.sh ./Caps ./Caps-ncurses > ${HASHSIZE_H}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
 )
+
+add_custom_target(HASHSIZE_H_TARGET DEPENDS ${HASHSIZE_H})
 
 set(INIT_KEYTRY_H ${CMAKE_CURRENT_BINARY_DIR}/init_keytry.h)
 add_custom_command(
