@@ -34,7 +34,7 @@ add_custom_command(
 set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
 add_custom_command(
     OUTPUT ${EXPANDED_C}
-    COMMAND sh -e ./tty/MKexpanded.sh > ${EXPANDED_C}
+    COMMAND sh -e ./tty/MKexpanded.sh "gcc -E" -DHAVE_CONFIG_H -I. -I../include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG > ${EXPANDED_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -138,10 +138,10 @@ add_custom_target(
 )
 
 add_library(ncurses STATIC
-    # ${CODES_C}
+    ${CODES_C}
     ${COMP_CAPTAB_C}
     ${COMP_USERDEFS_C}
-    # ${EXPANDED_C}
+    ${EXPANDED_C}
     ${FALLBACK_C}
     ${NAMES_C}
     ${UNCTRL_C}
