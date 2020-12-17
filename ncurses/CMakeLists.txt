@@ -67,11 +67,14 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(CURSES_H ${CMAKE_CURRENT_BINARY_DIR}/curses.h)
+
 set(LIB_GEN_C ${CMAKE_CURRENT_BINARY_DIR}/lib_gen.c)
 add_custom_command(
     OUTPUT ${LIB_GEN_C}
-    COMMAND sh -e ./base/MKlib_gen.sh "${PREPROCESSOR_CMD} ${PREPROCESSOR_ARGS}" "awk" generated < ../include/curses.h > ${LIB_GEN_C}
+    COMMAND sh -e ./base/MKlib_gen.sh "${PREPROCESSOR_CMD} ${PREPROCESSOR_ARGS}" "awk" generated < ${CURSES_H} > ${LIB_GEN_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS ${CURSES_H}
 )
 
 ### Misc tools
@@ -136,6 +139,15 @@ set(PARAMETRIZED_H ${CMAKE_CURRENT_BINARY_DIR}/parametrized.h)
 add_custom_command(
     OUTPUT ${PARAMETRIZED_H}
     COMMAND sh ./MKparametrized.sh ./Caps ./Caps-ncurses > ${PARAMETRIZED_H}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
+)
+
+add_custom_command(
+    OUTPUT ${CURSES_H}
+    COMMAND cat curses.head > ${CURSES_H}
+    COMMAND sh ./MKkey_defs.sh ./Caps ./Caps-ncurses >> ${CURSES_H}
+    COMMAND sh -c 'if test \"chtype\" = \"cchar_t\" \; then cat ./curses.wide >> ${CURSES_H} \; fi'
+    COMMAND cat ./curses.tail >> ${CURSES_H}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include
 )
 
