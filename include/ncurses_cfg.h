@@ -32,7 +32,7 @@
  *  Author: Thomas E. Dickey      1997-on                                   *
  ****************************************************************************/
 /*
- * $Id: ncurses_cfg.hin,v 1.12 2020/02/02 23:34:34 tom Exp $
+ * $Id: ncurses_cfg.hin,v 1.13 2020/03/08 12:37:59 tom Exp $
  *
  * Both ncurses_cfg.h and ncurses_def.h are internal header-files used when
  * building ncurses.
@@ -44,7 +44,7 @@
  * 971222) to autoconf 2.12 or 2.13 to do this.
  *
  * See:
- *	http://invisible-island.net/autoconf/
+ *	https://invisible-island.net/autoconf/
  *	ftp://ftp.invisible-island.net/autoconf/
  */
 #ifndef NC_CONFIG_H
@@ -52,7 +52,7 @@
 
 #define PACKAGE "ncurses"
 #define NCURSES_VERSION "6.2"
-#define NCURSES_PATCHDATE 20200212
+#define NCURSES_PATCHDATE 20201212
 #define SYSTEM_NAME "linux-gnu"
 #if 0
 #include <stdlib.h>
@@ -157,6 +157,7 @@
 #define HAVE_SETENV 1
 #define HAVE_SETVBUF 1
 #define HAVE_SIGACTION 1
+#define HAVE_SNPRINTF 1
 #define HAVE_STRDUP 1
 #define HAVE_STRSTR 1
 #define HAVE_SYSCONF 1
@@ -188,6 +189,7 @@
 #define HAVE_TYPEINFO 1
 #define HAVE_IOSTREAM 1
 #define IOSTREAM_NAMESPACE 1
+#define SIZEOF_BOOL 1
 #define CPP_HAS_STATIC_CAST 1
 #define HAVE_SLK_COLOR 1
 #define HAVE_PANEL_H 1
@@ -197,7 +199,7 @@
 #define HAVE_FORM_H 1
 #define HAVE_LIBFORM 1
 #define NCURSES_PATHSEP ':'
-#define NCURSES_VERSION_STRING "6.2.20200212"
+#define NCURSES_VERSION_STRING "6.2.20201212"
 #define NCURSES_OSPEED_COMPAT 1
 #define HAVE_CURSES_DATA_BOOLNAMES 1
 
