@@ -6,6 +6,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+set(PREPROCESSOR_CMD "gcc -E")
+set(PREPROCESSOR_ARGS "PREPROCESSOR_CMD-DHAVE_CONFIG_H -I. -I../include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG")
+
 ### Generated C source files
 
 set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
@@ -34,7 +37,7 @@ add_custom_command(
 set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
 add_custom_command(
     OUTPUT ${EXPANDED_C}
-    COMMAND sh -e ./tty/MKexpanded.sh "gcc -E" -DHAVE_CONFIG_H -I. -I../include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG > ${EXPANDED_C}
+    COMMAND sh -e ./tty/MKexpanded.sh "${PREPROCESSOR_CMD}" ${PREPROCESSOR_ARGS} > ${EXPANDED_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -61,6 +64,13 @@ set(UNCTRL_C ${CMAKE_CURRENT_BINARY_DIR}/unctrl.c)
 add_custom_command(
     OUTPUT ${UNCTRL_C}
     COMMAND echo | awk -f ./base/MKunctrl.awk bigstrings=1 > ${UNCTRL_C}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(LIB_GEN_C ${CMAKE_CURRENT_BINARY_DIR}/lib_gen.c)
+add_custom_command(
+    OUTPUT ${LIB_GEN_C}
+    COMMAND sh -e ./base/MKlib_gen.sh "${PREPROCESSOR_CMD} ${PREPROCESSOR_ARGS}" "awk" generated < ../include/curses.h > ${LIB_GEN_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -145,6 +155,7 @@ add_library(ncurses STATIC
     ${FALLBACK_C}
     ${NAMES_C}
     ${UNCTRL_C}
+    ${LIB_GEN_C}
     base/define_key.c
     base/key_defined.c
     base/keybound.c
@@ -229,7 +240,6 @@ add_library(ncurses STATIC
     base/version.c
     base/vsscanf.c
     base/wresize.c
-    # lib_gen.c
     # lib_keyname.c
     tinfo/access.c
     tinfo/add_tries.c
