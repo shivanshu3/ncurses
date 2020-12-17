@@ -1,6 +1,11 @@
 add_compile_definitions(_DEFAULT_SOURCE)
 add_compile_definitions(_XOPEN_SOURCE=600)
 add_compile_definitions(NDEBUG)
+add_compile_definitions(BUILDING_NCURSES)
+
+if (MSVC)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 14)
