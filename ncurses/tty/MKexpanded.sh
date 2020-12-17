@@ -125,7 +125,17 @@ _nc_UpdateAttrs (CARG_CH_T c)
 @endif
 EOF
 
-$preprocessor $TMP 2>/dev/null | \
+PREPROCESSED_OUTPUT=pp_out$$.i
+
+>&2 echo $preprocessor $TMP
+
+$preprocessor $TMP > $PREPROCESSED_OUTPUT
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+cat $PREPROCESSED_OUTPUT | \
 	sed -e '1,/^IGNORE$/d' -e 's/^@/#/' -e 's/^#[ 	]*if_/#if /' -e "s,$TMP,expanded.c,"
 
 cat <<EOF
