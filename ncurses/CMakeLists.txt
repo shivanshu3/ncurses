@@ -2,6 +2,11 @@ add_compile_definitions(_DEFAULT_SOURCE)
 add_compile_definitions(_XOPEN_SOURCE=600)
 add_compile_definitions(NDEBUG)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
+
+add_compile_options(-Werror)
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)

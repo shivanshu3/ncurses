@@ -2783,6 +2783,10 @@ NCURSES_EXPORT(int) _nc_conv_to_utf8(unsigned char *, unsigned, unsigned);
 NCURSES_EXPORT(int) _nc_conv_to_utf32(unsigned *, const char *, unsigned);
 #endif
 
+// Fixing compile errors. Why is this needed? Shouldn't this already be
+// declared elsewhere?
+char* _nc_tiparm(int expected, const char *string, ...);
+
 #ifdef __cplusplus
 }
 #endif
