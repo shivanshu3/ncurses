@@ -17,6 +17,7 @@ else()
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/gen_headers)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -32,7 +33,7 @@ else()
     set(EXE_EXT "")
 endif()
 
-set(PREPROCESSOR_ARGS "-DHAVE_CONFIG_H -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_SOURCE_DIR}/include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG")
+set(PREPROCESSOR_ARGS "-DHAVE_CONFIG_H -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_SOURCE_DIR}/gen_headers -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_SOURCE_DIR}/include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG")
 
 # Generated source file paths
 set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
@@ -180,7 +181,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${CURSES_H}
-    COMMAND cat curses.head > ${CURSES_H}
+    COMMAND cat ${CMAKE_SOURCE_DIR}/gen_headers/curses.head > ${CURSES_H}
     COMMAND sh ./MKkey_defs.sh ./Caps ./Caps-ncurses >> ${CURSES_H}
     COMMAND sh -c 'if test \"chtype\" = \"cchar_t\" \; then cat ./curses.wide >> ${CURSES_H} \; fi'
     COMMAND cat ./curses.tail >> ${CURSES_H}
