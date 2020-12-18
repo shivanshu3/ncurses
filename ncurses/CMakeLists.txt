@@ -34,16 +34,37 @@ endif()
 
 set(PREPROCESSOR_ARGS "-DHAVE_CONFIG_H -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_SOURCE_DIR}/include -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNDEBUG")
 
+# Generated source file paths
+set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
+set(COMP_CAPTAB_C ${CMAKE_CURRENT_BINARY_DIR}/comp_captab.c)
+set(COMP_USERDEFS_C ${CMAKE_CURRENT_BINARY_DIR}/comp_userdefs.c)
+set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
+set(FALLBACK_C ${CMAKE_CURRENT_BINARY_DIR}/fallback.c)
+set(LIB_GEN_C ${CMAKE_CURRENT_BINARY_DIR}/lib_gen.c)
+set(UNCTRL_C ${CMAKE_CURRENT_BINARY_DIR}/unctrl.c)
+set(NAMES_C ${CMAKE_CURRENT_BINARY_DIR}/names.c)
+
+# Generated header file paths
+set(CURSES_H ${CMAKE_CURRENT_BINARY_DIR}/curses.h)
+set(NCURSES_DEF_H ${CMAKE_CURRENT_BINARY_DIR}/ncurses_def.h)
+set(HASHSIZE_H ${CMAKE_CURRENT_BINARY_DIR}/hashsize.h)
+set(INIT_KEYTRY_H ${CMAKE_CURRENT_BINARY_DIR}/init_keytry.h)
+set(PARAMETRIZED_H ${CMAKE_CURRENT_BINARY_DIR}/parametrized.h)
+
+# Generated misc file paths
+set(KEYS_LIST ${CMAKE_CURRENT_BINARY_DIR}/keys.list)
+
+set(MAKE_KEYS_PATH ${CMAKE_CURRENT_BINARY_DIR}/make_keys${EXE_EXT})
+set(MAKE_HASH_PATH ${CMAKE_CURRENT_BINARY_DIR}/make_hash${EXE_EXT})
+
 ### Generated C source files
 
-set(CODES_C ${CMAKE_CURRENT_BINARY_DIR}/codes.c)
 add_custom_command(
     OUTPUT ${CODES_C}
     COMMAND awk -f ./tinfo/MKcodes.awk bigstrings=1 ../include/Caps ../include/Caps-ncurses > ${CODES_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(COMP_CAPTAB_C ${CMAKE_CURRENT_BINARY_DIR}/comp_captab.c)
 add_custom_command(
     OUTPUT ${COMP_CAPTAB_C}
     COMMAND sh -e ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKcaptab.sh awk 1 ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKcaptab.awk ${CMAKE_SOURCE_DIR}/include/Caps ${CMAKE_SOURCE_DIR}/include/Caps-ncurses > ${COMP_CAPTAB_C}
@@ -51,7 +72,6 @@ add_custom_command(
     DEPENDS ${MAKE_HASH_PATH}
 )
 
-set(COMP_USERDEFS_C ${CMAKE_CURRENT_BINARY_DIR}/comp_userdefs.c)
 add_custom_command(
     OUTPUT ${COMP_USERDEFS_C}
     COMMAND sh -e ${CMAKE_CURRENT_SOURCE_DIR}/tinfo/MKuserdefs.sh awk 1 ${CMAKE_SOURCE_DIR}/include/Caps ${CMAKE_SOURCE_DIR}/include/Caps-ncurses > ${COMP_USERDEFS_C}
@@ -59,21 +79,18 @@ add_custom_command(
     DEPENDS ${MAKE_HASH_PATH}
 )
 
-set(EXPANDED_C ${CMAKE_CURRENT_BINARY_DIR}/expanded.c)
 add_custom_command(
     OUTPUT ${EXPANDED_C}
     COMMAND sh -e ${CMAKE_CURRENT_SOURCE_DIR}/tty/MKexpanded.sh "${PREPROCESSOR_CMD}" ${PREPROCESSOR_ARGS} > ${EXPANDED_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(FALLBACK_C ${CMAKE_CURRENT_BINARY_DIR}/fallback.c)
 add_custom_command(
     OUTPUT ${FALLBACK_C}
     COMMAND sh -e ./tinfo/MKfallback.sh /usr/share/terminfo ../misc/terminfo.src tic infocmp > ${FALLBACK_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(NAMES_C ${CMAKE_CURRENT_BINARY_DIR}/names.c)
 add_custom_command(
     OUTPUT ${NAMES_C}
     COMMAND awk -f ./tinfo/MKnames.awk bigstrings=1 ../include/Caps ../include/Caps-ncurses > ${NAMES_C}
@@ -81,16 +98,12 @@ add_custom_command(
 )
 add_custom_target(NAMES_C_TARGET DEPENDS ${NAMES_C})
 
-set(UNCTRL_C ${CMAKE_CURRENT_BINARY_DIR}/unctrl.c)
 add_custom_command(
     OUTPUT ${UNCTRL_C}
     COMMAND echo | awk -f ./base/MKunctrl.awk bigstrings=1 > ${UNCTRL_C}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(CURSES_H ${CMAKE_CURRENT_BINARY_DIR}/curses.h)
-
-set(LIB_GEN_C ${CMAKE_CURRENT_BINARY_DIR}/lib_gen.c)
 add_custom_command(
     OUTPUT ${LIB_GEN_C}
     COMMAND sh -e ./base/MKlib_gen.sh "${PREPROCESSOR_CMD} ${PREPROCESSOR_ARGS}" "awk" generated < ${CURSES_H} > ${LIB_GEN_C}
@@ -100,7 +113,6 @@ add_custom_command(
 
 ### Misc tools
 
-set(MAKE_KEYS_PATH ${CMAKE_CURRENT_BINARY_DIR}/make_keys${EXE_EXT})
 add_executable(make_keys
     ./tinfo/make_keys.c
 )
@@ -115,7 +127,6 @@ add_dependencies(make_keys
     CURSES_H_TARGET
 )
 
-set(MAKE_HASH_PATH ${CMAKE_CURRENT_BINARY_DIR}/make_hash${EXE_EXT})
 add_executable(make_hash
     ./tinfo/make_hash.c
 )
@@ -130,7 +141,6 @@ add_dependencies(make_hash
 
 ### Misc generated files
 
-set(KEYS_LIST ${CMAKE_CURRENT_BINARY_DIR}/keys.list)
 add_custom_command(
     OUTPUT ${KEYS_LIST}
     COMMAND sh ./tinfo/MKkeys_list.sh ../include/Caps ../include/Caps-ncurses | sort > ${KEYS_LIST}
@@ -139,7 +149,6 @@ add_custom_command(
 
 ### Generated H files
 
-set(NCURSES_DEF_H ${CMAKE_CURRENT_BINARY_DIR}/ncurses_def.h)
 add_custom_command(
     OUTPUT ${NCURSES_DEF_H}
     COMMAND sh ./MKncurses_def.sh ./ncurses_defs > ${NCURSES_DEF_H}
@@ -147,7 +156,6 @@ add_custom_command(
 )
 add_custom_target(NCURSES_DEF_H_TARGET DEPENDS ${NCURSES_DEF_H})
 
-set(HASHSIZE_H ${CMAKE_CURRENT_BINARY_DIR}/hashsize.h)
 add_custom_command(
     OUTPUT ${HASHSIZE_H}
     COMMAND sh ./MKhashsize.sh ./Caps ./Caps-ncurses > ${HASHSIZE_H}
@@ -155,7 +163,6 @@ add_custom_command(
 )
 add_custom_target(HASHSIZE_H_TARGET DEPENDS ${HASHSIZE_H})
 
-set(INIT_KEYTRY_H ${CMAKE_CURRENT_BINARY_DIR}/init_keytry.h)
 add_custom_command(
     OUTPUT ${INIT_KEYTRY_H}
     COMMAND ${MAKE_KEYS_PATH} ${KEYS_LIST} > ${INIT_KEYTRY_H}
@@ -165,7 +172,6 @@ add_custom_command(
 add_custom_target(INIT_KEYTRY_H_TARGET DEPENDS ${INIT_KEYTRY_H})
 add_dependencies(INIT_KEYTRY_H_TARGET make_keys)
 
-set(PARAMETRIZED_H ${CMAKE_CURRENT_BINARY_DIR}/parametrized.h)
 add_custom_command(
     OUTPUT ${PARAMETRIZED_H}
     COMMAND sh ./MKparametrized.sh ./Caps ./Caps-ncurses > ${PARAMETRIZED_H}
